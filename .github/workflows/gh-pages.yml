@@ -29,8 +29,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          cname: github.com
-          publish_dir: ./
-          publish_branch: gh-pages
+          cname: micah.ash.gay
+          publish_dir: ./public
           allow_empty_commit: false
           commit_message: ${{ github.event.head_commit.message }}
