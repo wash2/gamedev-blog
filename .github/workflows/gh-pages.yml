@@ -29,7 +29,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: main
+          publish_dir: ./
+          publish_branch: gh-pages
           emptyCommits: false
           commitMessage: ${{ github.event.head_commit.message }}
