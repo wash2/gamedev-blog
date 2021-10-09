@@ -1,0 +1,344 @@
+<!doctype html><html lang=en-us>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Depoloying Nakama Server on a Free Oracle VM that is using an ARM CPU!"><title>Depoloying Nakama</title>
+<link rel=canonical href=https://micah.ash.gay/p/nakama-arm/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Depoloying Nakama">
+<meta property="og:description" content="Depoloying Nakama Server on a Free Oracle VM that is using an ARM CPU!">
+<meta property="og:url" content="https://micah.ash.gay/p/nakama-arm/">
+<meta property="og:site_name" content="Gamedev Blog">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Nakama"><meta property="article:tag" content="Cloud"><meta property="article:tag" content="Networking"><meta property="article:tag" content="Docker"><meta property="article:tag" content="Oracle"><meta property="article:tag" content="Arm"><meta property="article:published_time" content="2021-10-09T01:00:00+02:00"><meta property="article:modified_time" content="2021-10-09T01:00:00+02:00"><meta property="og:image" content="https://micah.ash.gay/p/nakama-arm/cover.jpg">
+<meta name=twitter:title content="Depoloying Nakama">
+<meta name=twitter:description content="Depoloying Nakama Server on a Free Oracle VM that is using an ARM CPU!"><meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://micah.ash.gay/p/nakama-arm/cover.jpg">
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=https://micah.ash.gay class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>Back</span>
+</a>
+</div>
+<main class="main full-width">
+<article class="has-image main-article">
+<header class=article-header>
+<div class=article-image>
+<a href=/p/nakama-arm/>
+<img src=/p/nakama-arm/cover_hu3c4c45ec35f01b0db72a8c92b5c08312_15402_800x0_resize_q75_box.jpg srcset="/p/nakama-arm/cover_hu3c4c45ec35f01b0db72a8c92b5c08312_15402_800x0_resize_q75_box.jpg 800w, /p/nakama-arm/cover_hu3c4c45ec35f01b0db72a8c92b5c08312_15402_1600x0_resize_q75_box.jpg 1600w" width=800 height=400 loading=lazy alt="Featured image of post Depoloying Nakama">
+</a>
+</div>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/blog/>
+Blog
+</a>
+<a href=/categories/development/>
+Development
+</a>
+</header>
+<h2 class=article-title>
+<a href=/p/nakama-arm/>Depoloying Nakama</a>
+</h2>
+<h3 class=article-subtitle>
+Depoloying Nakama Server on a Free Oracle VM that is using an ARM CPU!
+</h3>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Oct 09, 2021</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+6 minute read
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>This article was inspired by an article on the Oracle dev blog about <a class=link href=https://blogs.oracle.com/developers/post/how-to-set-up-and-run-a-really-powerful-free-minecraft-server-in-the-cloud target=_blank rel=noopener>setting up a free Minecraft server</a> :)</p>
+<p>Create your free Oracle Cloud Account <a class=link href=https://www.oracle.com/cloud/free/ target=_blank rel=noopener>here</a> to get started! It may take a few days for the account to be confirmed. I eventually received a phone call confirming my account and was able to get started after that.</p>
+<h2 id=creating-an-always-free-vm>Creating an Always Free VM</h2>
+<p>Much of this section is &ldquo;borrowed&rdquo; from the Minecraft article on the Oracle dev blog.</p>
+<p>Log into your free account and get started by Creating a VM instance.</p>
+<p><figure class=gallery-image style=flex-grow:192;flex-basis:460px>
+<a href=/p/nakama-arm/create-vm.png data-size=912x475>
+<img src=/p/nakama-arm/create-vm.png width=912 height=475 srcset="/p/nakama-arm/create-vm_hu2d8fd3dacb8c7152c918e418f23dfabc_68703_480x0_resize_box_3.png 480w, /p/nakama-arm/create-vm_hu2d8fd3dacb8c7152c918e418f23dfabc_68703_1024x0_resize_box_3.png 1024w" loading=lazy alt=create-vm>
+</a>
+<figcaption>create-vm</figcaption>
+</figure></p>
+<p>Give your VM instance a name (the example from Oracle is “minecraft-server") and choose a “compartment”. Compartments are just a way to group different things together. You can just leave the default (“root”) compartment selected.</p>
+<p>Also, choose an “availability domain”, preferably one close to where you are geographically - but, it shouldn&rsquo;t matter too much. (You may need to change the availability domain if you can&rsquo;t find the Ampere Arm shape)</p>
+<p><figure class=gallery-image style=flex-grow:141;flex-basis:340px>
+<a href=/p/nakama-arm/availability-domain.png data-size=792x559>
+<img src=/p/nakama-arm/availability-domain.png width=792 height=559 srcset="/p/nakama-arm/availability-domain_hu3a229febe353e616bd7bff5ec257ea56_60563_480x0_resize_box_3.png 480w, /p/nakama-arm/availability-domain_hu3a229febe353e616bd7bff5ec257ea56_60563_1024x0_resize_box_3.png 1024w" loading=lazy alt=availability-domain>
+</a>
+<figcaption>availability-domain</figcaption>
+</figure></p>
+<p>Next, find the Image and Shape section, select Oracle Linux 8.4 and then click &ldquo;change shape&rdquo;</p>
+<p><figure class=gallery-image style=flex-grow:149;flex-basis:359px>
+<a href=/p/nakama-arm/shape.png data-size=789x527>
+<img src=/p/nakama-arm/shape.png width=789 height=527 srcset="/p/nakama-arm/shape_hu978e1af3bda68e03606018227f8ced2e_57859_480x0_resize_box_3.png 480w, /p/nakama-arm/shape_hu978e1af3bda68e03606018227f8ced2e_57859_1024x0_resize_box_3.png 1024w" loading=lazy alt=shape>
+</a>
+<figcaption>shape</figcaption>
+</figure></p>
+<p>In the shape dialog, select the &lsquo;Instance type&rsquo; of ‘Virtual Machine’ and then select ‘Ampere’ (ARM) under ’Shape series’. Choose the ‘VM.Standard.A1.Flex’ shape and choose the amount of CPU and RAM that you want to allocate to this server. For your “always free” ARM servers, you get up to 4 OCPU and 24 GB of RAM to allocate. This means that you can turn up one virtual machine with 4 OCPU and 24GB of RAM, or 4 servers each with 1 OCPU and 6GB of RAM (or any combination up to the limit).</p>
+<p>For the sake of this tutorial you can create your virtual machine with 4 OCPU and 24GB of RAM.</p>
+<p><figure class=gallery-image style=flex-grow:134;flex-basis:322px>
+<a href=/p/nakama-arm/selecting-arm.png data-size=881x656>
+<img src=/p/nakama-arm/selecting-arm.png width=881 height=656 srcset="/p/nakama-arm/selecting-arm_hu2b12d887ed815d4c497744c149aa436d_100961_480x0_resize_box_3.png 480w, /p/nakama-arm/selecting-arm_hu2b12d887ed815d4c497744c149aa436d_100961_1024x0_resize_box_3.png 1024w" loading=lazy alt=selecting-arm>
+</a>
+<figcaption>selecting-arm</figcaption>
+</figure></p>
+<p>Double check that the Always Free Eligible tag is visible for your selected shape.</p>
+<p><figure class=gallery-image style=flex-grow:200;flex-basis:480px>
+<a href=/p/nakama-arm/always-free-indicator.png data-size=757x378>
+<img src=/p/nakama-arm/always-free-indicator.png width=757 height=378 srcset="/p/nakama-arm/always-free-indicator_hu0776b65d8a45c8972de37feac3ec130c_40886_480x0_resize_box_3.png 480w, /p/nakama-arm/always-free-indicator_hu0776b65d8a45c8972de37feac3ec130c_40886_1024x0_resize_box_3.png 1024w" loading=lazy alt=always-free-indicator>
+</a>
+<figcaption>always-free-indicator</figcaption>
+</figure></p>
+<p>Next, we’ll need to choose a virtual cloud network (VCN). If you already have an existing VCN with a public subnet, choose that. If not, select ‘Create a new virtual cloud network’. Then, choose ‘Create a public subnet’ and accept the default names. Finally, make sure that ‘Assign a public IPv4 address’ is selected (otherwise you couldn’t connect to this server from the internet!).</p>
+<p><figure class=gallery-image style=flex-grow:118;flex-basis:283px>
+<a href=/p/nakama-arm/vcn.png data-size=766x649>
+<img src=/p/nakama-arm/vcn.png width=766 height=649 srcset="/p/nakama-arm/vcn_hu33083279203848134981fc4e906fd296_90252_480x0_resize_box_3.png 480w, /p/nakama-arm/vcn_hu33083279203848134981fc4e906fd296_90252_1024x0_resize_box_3.png 1024w" loading=lazy alt=vcn>
+</a>
+<figcaption>vcn</figcaption>
+</figure></p>
+<p>Now we need to associate an “SSH” key pair with this VM. If you’re familiar with this concept and already have a public key that you want to use, choose ‘Upload public key files’ and upload your public key. If you’re not familiar with this, think of these keys as a unique set of identifiers that allow you to securely log in to your server. Click ‘Generate SSH key pair’ and save your private and public keys to your local machine. We’ll use these in just a bit to log in to the VM.</p>
+<p><figure class=gallery-image style=flex-grow:240;flex-basis:577px>
+<a href=/p/nakama-arm/ssh-key-upload-or-creation.png data-size=791x329>
+<img src=/p/nakama-arm/ssh-key-upload-or-creation.png width=791 height=329 srcset="/p/nakama-arm/ssh-key-upload-or-creation_hu6dc785744a8067c5622820ca74ad6ac1_48368_480x0_resize_box_3.png 480w, /p/nakama-arm/ssh-key-upload-or-creation_hu6dc785744a8067c5622820ca74ad6ac1_48368_1024x0_resize_box_3.png 1024w" loading=lazy alt=ssh-key-upload-or-creation>
+</a>
+<figcaption>ssh-key-upload-or-creation</figcaption>
+</figure></p>
+<p>Finally click &ldquo;Create&rdquo; and you will be redirected to the VM details page. In a few minutes, your VM will be up and running. Take note of your public IP!</p>
+<p><figure class=gallery-image style=flex-grow:222;flex-basis:534px>
+<a href=/p/nakama-arm/public-ip.png data-size=899x404>
+<img src=/p/nakama-arm/public-ip.png width=899 height=404 srcset="/p/nakama-arm/public-ip_hub9f70d640ba199cbbd80199eb17b53fa_62693_480x0_resize_box_3.png 480w, /p/nakama-arm/public-ip_hub9f70d640ba199cbbd80199eb17b53fa_62693_1024x0_resize_box_3.png 1024w" loading=lazy alt=public-ip>
+</a>
+<figcaption>public-ip</figcaption>
+</figure></p>
+<p>Finally connect to your VM using SSH. It may take a couple more minutes after the VM has started to accept the connection, so be patient.</p>
+<p><figure class=gallery-image style=flex-grow:621;flex-basis:1490px>
+<a href=/p/nakama-arm/connect-to-vm.png data-size=677x109>
+<img src=/p/nakama-arm/connect-to-vm.png width=677 height=109 srcset="/p/nakama-arm/connect-to-vm_hu00e005738c0388cc61b4354a67e0574d_27214_480x0_resize_box_3.png 480w, /p/nakama-arm/connect-to-vm_hu00e005738c0388cc61b4354a67e0574d_27214_1024x0_resize_box_3.png 1024w" loading=lazy alt=connect-to-vm>
+</a>
+<figcaption>connect-to-vm</figcaption>
+</figure></p>
+<h2 id=installing-docker-packages>Installing Docker packages</h2>
+<p>You may need to run the following commands with sudo..</p>
+<p>Install Docker:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo dnf install -y dnf-utils zip unzip
+sudo dnf config-manager --add-repo<span class=o>=</span>https://download.docker.com/linux/centos/docker-ce.repo
+
+sudo dnf remove -y runc 
+sudo dnf install -y docker-ce --nobest
+</code></pre></div><p>Start the docker service now and enable it so it runs on boot:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo systemctl <span class=nb>enable</span> docker.service --now
+</code></pre></div><p>Check the status of the docker service:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>systemctl status docker.service
+sudo docker info
+sudo docker version
+</code></pre></div><p>run hello world!</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo docker run hello-world
+sudo docker images hello-world
+</code></pre></div><p>Create the docker group. The docker group will give members the privelege to run docker commands without sudo. This is equivalent to having priveleges of the root user, but will be necessary for the next step.</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo groupadd docker
+sudo usermod -aG docker <span class=nv>$USER</span>
+</code></pre></div><p>Restart the VM and reconnect</p>
+<p>run hello world again without sudo!</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker run hello-world
+docker images hello-world
+</code></pre></div><p>Finally install Docker Compose: following the instructions at the <a class=link href=https://github.com/docker/compose target=_blank rel=noopener>Github Repo</a>. (The docker site instructions are out of date for Linux install)</p>
+<h2 id=getting-nakama-docker-compose-configs>Getting Nakama Docker Compose Configs</h2>
+<p>Familiarize yourself with Nakama deployment basics at their <a class=link href=https://heroiclabs.com/docs/nakama/getting-started/docker-quickstart/ target=_blank rel=noopener>site</a>.</p>
+<p>Create a nakama directory to hold the files in your $HOME directory.</p>
+<pre tabindex=0><code>[opc@ashtronaut-vm nakama]$ pwd
+/home/opc/nakama
+[opc@ashtronaut-vm nakama]$ ls docker-compose.yml 
+docker-compose.yml
+</code></pre><p>Try running <code>docker compose up</code>. It will fail because you need to make some changes to the docker-compose.yml that they provide in order to run on Arm. Not only that, but Nakama does not provide an ARM image, but since it is Open Source, their Dockerfile is available in the public repo, and we can build our own!</p>
+<h2 id=necessary-config-changes>Necessary Config Changes</h2>
+<p>Change the <a class=link href=https://hub.docker.com/r/christoofar/cockroachdb-arm64 target=_blank rel=noopener>cockroachDB image</a>. Note that you could also build your own, but at the time of writing, this is a fairly recent build.</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=c># /home/opc/nakama/docker-compose.yml</span><span class=w>
+</span><span class=w></span><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s1>&#39;3&#39;</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>cockroachdb</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>christoofar/cockroachdb-arm64</span><span class=w>
+</span><span class=w></span><span class=c># ...</span><span class=w>
+</span></code></pre></div><p>Change the <a class=link href=https://hub.docker.com/r/prom/prometheus-linux-arm64 target=_blank rel=noopener>Prometheus image</a>.</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=c># /home/opc/nakama/docker-compose.yml</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w></span><span class=c># ...</span><span class=w>
+</span><span class=w>  </span><span class=nt>prometheus</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>christoofar/cockroachdb-arm64</span><span class=w>
+</span><span class=w></span><span class=c># ...</span><span class=w>
+</span></code></pre></div><p>Build your own Nakama image!
+Clone the <a class=link href=https://github.com/heroiclabs/nakama target=_blank rel=noopener>Nakama public repository</a> into the your current directory. <code>pwd</code> should show as /home/opc/nakama/nakama/build.</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>git clone https://github.com/heroiclabs/nakama.git
+<span class=nb>cd</span> nakama/build
+<span class=nb>pwd</span>
+</code></pre></div><p>edit build/Dockerfile. Find the line with <code>ENV GOARCH amd64</code> and change the value to <code>ENV GOARCH arm64</code>. Next run the build with the latest release version.</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>docker build <span class=s2>&#34;</span><span class=nv>$PWD</span><span class=s2>&#34;</span> --build-arg <span class=nv>commit</span><span class=o>=</span><span class=s2>&#34;</span><span class=k>$(</span>git rev-parse --short HEAD<span class=k>)</span><span class=s2>&#34;</span> --build-arg <span class=nv>version</span><span class=o>=</span>v3.2.1 -t heroiclabs/nakama:3.2.1-arm64
+
+</code></pre></div><p>Finally edit your docker-compose to use your new docker image! It will already be stored with docker.</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=c># /home/opc/nakama/docker-compose.yml</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w></span><span class=c># ...</span><span class=w>
+</span><span class=w>  </span><span class=nt>nakama</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>heroiclabs/nakama:3.2.1-arm64</span><span class=w>
+</span><span class=w></span><span class=c># ...</span><span class=w>
+</span></code></pre></div><p>After you can successfully run <code>docker compose up</code>, Try replacing the default security keys and passwords values using a config like provided <a class=link href=https://heroiclabs.com/docs/nakama/getting-started/docker-quickstart/#configuration-file target=_blank rel=noopener>here</a> also see <a class=link href=https://heroiclabs.com/docs/nakama/getting-started/docker-quickstart/#configuration-file target=_blank rel=noopener>https://heroiclabs.com/docs/nakama/getting-started/docker-quickstart/#configuration-file</a> for reference.</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yml data-lang=yml><span class=c># /home/opc/nakama/docker-compose.yml</span><span class=w>
+</span><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span><span class=w></span><span class=c># ...</span><span class=w>
+</span><span class=w>  </span><span class=nt>nakama</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>heroiclabs/nakama:3.2.1-arm64</span><span class=w>
+</span><span class=w>    </span><span class=nt>entrypoint</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;/bin/sh&#34;</span><span class=w>
+</span><span class=w>      </span>- <span class=s2>&#34;-ecx&#34;</span><span class=w>
+</span><span class=w>      </span>- <span class=p>&gt;</span><span class=sd>
+</span><span class=sd>        /nakama/nakama migrate up --database.address root@cockroachdb:26257 &amp;&amp;
+</span><span class=sd>        exec /nakama/nakama --config /nakama/data/full-config.yml --database.address root@cockroachdb:26257 --logger.level DEBUG --session.token_expiry_sec 7200 --metrics.prometheus_port 9100</span><span class=w>        
+</span></code></pre></div><h2 id=run-on-boot-via-systemd>Run on Boot via Systemd</h2>
+<p>Write a systemd service file that will run your docker compose script on boot!</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=c1># /etc/systemd/system/docker-compose-app.service</span>
+
+<span class=k>[Unit]</span>
+<span class=na>Description</span><span class=o>=</span><span class=s>Docker Compose Application Service</span>
+<span class=na>Requires</span><span class=o>=</span><span class=s>docker.service</span>
+<span class=na>After</span><span class=o>=</span><span class=s>docker.service</span>
+
+<span class=k>[Service]</span>
+<span class=na>Type</span><span class=o>=</span><span class=s>oneshot</span>
+<span class=na>RemainAfterExit</span><span class=o>=</span><span class=s>yes</span>
+<span class=na>User</span><span class=o>=</span><span class=s>opc</span>
+<span class=na>WorkingDirectory</span><span class=o>=</span><span class=s>/home/opc/nakama/</span>
+<span class=na>ExecStart</span><span class=o>=</span><span class=s>/usr/bin/docker compose up -d</span>
+<span class=na>ExecStop</span><span class=o>=</span><span class=s>/usr/bin/docker compose down</span>
+<span class=na>TimeoutStartSec</span><span class=o>=</span><span class=s>0</span>
+
+<span class=k>[Install]</span>
+<span class=na>WantedBy</span><span class=o>=</span><span class=s>multi-user.target</span>
+</code></pre></div><p>enable the service to run on boot!</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>sudo systemctl <span class=nb>enable</span> docker-compose-app
+</code></pre></div><p>Restart your VM and check the status of your service:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash>systemctl status docker-compose-app
+<span class=c1># view logs</span>
+journalctl -xeu docker-compose-app
+</code></pre></div><h2 id=setting-up-vcn-firewall-rules>Setting up VCN Firewall Rules</h2>
+<p>Finally return to the Oracle Cloud dashboard and navigate to your VM details page. Click on the VCN subnet then select the security list and you will be taken to the correct page for adding ingress and egress rules. These will allow data to flow in and out of your VM.
+Create ingress and egress rules for the ports that you specified in your configuration. I will just add TCP rules, but if you plan on using UDP you should add rules for those as well.</p>
+<p><figure class=gallery-image style=flex-grow:187;flex-basis:450px>
+<a href=/p/nakama-arm/ingress.png data-size=925x493>
+<img src=/p/nakama-arm/ingress.png width=925 height=493 srcset="/p/nakama-arm/ingress_huc9bcb02f8d7245a22d6e12fad7cec776_38882_480x0_resize_box_3.png 480w, /p/nakama-arm/ingress_huc9bcb02f8d7245a22d6e12fad7cec776_38882_1024x0_resize_box_3.png 1024w" loading=lazy alt=ingress>
+</a>
+<figcaption>ingress</figcaption>
+</figure></p>
+<p><figure class=gallery-image style=flex-grow:187;flex-basis:450px>
+<a href=/p/nakama-arm/egress.png data-size=925x493>
+<img src=/p/nakama-arm/egress.png width=925 height=493 srcset="/p/nakama-arm/egress_hu08c1a12e0392390c31f063214c535e2c_38787_480x0_resize_box_3.png 480w, /p/nakama-arm/egress_hu08c1a12e0392390c31f063214c535e2c_38787_1024x0_resize_box_3.png 1024w" loading=lazy alt=egress>
+</a>
+<figcaption>egress</figcaption>
+</figure></p>
+<p>That&rsquo;s it, you&rsquo;re done! Try following <a class=link href=https://heroiclabs.com/blog/tutorials/godot-fishgame/ target=_blank rel=noopener>https://heroiclabs.com/blog/tutorials/godot-fishgame/</a> and use your public IP and your secret key when working through the tutorial. Try sharing a lobby with a friend :)</p>
+<h2 id=future-goals>Future Goals</h2>
+<p>There is so much more that can be done with Nakama. You can proxy the server, for example. And it is intended to be run as a cluster. A future post could demonstrate the steps for deploying an auto-scaling cluster on AWS, GCP, or Oracle Cloud! For now I am just doing simple development and testing, so the free Oracle VM will be suitable for me :)</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/nakama/>Nakama</a>
+<a href=/tags/cloud/>Cloud</a>
+<a href=/tags/networking/>Networking</a>
+<a href=/tags/docker/>Docker</a>
+<a href=/tags/oracle/>Oracle</a>
+<a href=/tags/arm/>Arm</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+</footer>
+</article>
+<aside class=related-contents--wrapper>
+</aside>
+<div class=disqus-container>
+<div id=disqus_thread></div>
+<script type=application/javascript>var disqus_config=function(){};(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById('disqus_thread').innerHTML='Disqus comments not available by default when the website is previewed locally.';return}var b=document,a=b.createElement('script');a.async=!0,a.src='//hugo-theme-stack.disqus.com/embed.js',a.setAttribute('data-timestamp',+new Date),(b.head||b.body).appendChild(a)})()</script>
+<noscript>Please enable JavaScript to view the <a href=https://disqus.com/?ref_noscript>comments powered by Disqus.</a></noscript>
+<a href=https://disqus.com class=dsq-brlink>comments powered by <span class=logo-disqus>Disqus</span></a>
+</div>
+<style>.disqus-container{background-color:var(--card-background);border-radius:var(--card-border-radius);box-shadow:var(--shadow-l1);padding:var(--card-padding)}</style>
+<script>window.addEventListener('onColorSchemeChange',a=>{DISQUS&&DISQUS.reset({reload:!0})})</script>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2020 -
+2021 Gamedev Blog
+</section>
+<section class=powerby>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.2.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">Table of contents</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#creating-an-always-free-vm>Creating an Always Free VM</a></li>
+<li><a href=#installing-docker-packages>Installing Docker packages</a></li>
+<li><a href=#getting-nakama-docker-compose-configs>Getting Nakama Docker Compose Configs</a></li>
+<li><a href=#necessary-config-changes>Necessary Config Changes</a></li>
+<li><a href=#run-on-boot-via-systemd>Run on Boot via Systemd</a></li>
+<li><a href=#setting-up-vcn-firewall-rules>Setting up VCN Firewall Rules</a></li>
+<li><a href=#future-goals>Future Goals</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>
