@@ -19,7 +19,7 @@ tags:
     - Arm
 ---
 
-This article was inspired by an article on the Oracle dev blog about [setting up a free Minecraft server](https://blogs.oracle.com/developers/post/how-to-set-up-and-run-a-really-powerful-free-minecraft-server-in-the-cloud) :)
+This post was inspired by an article on the Oracle dev blog about [setting up a free Minecraft server](https://blogs.oracle.com/developers/post/how-to-set-up-and-run-a-really-powerful-free-minecraft-server-in-the-cloud) :)
 
 Create your free Oracle Cloud Account [here](https://www.oracle.com/cloud/free/) to get started! It may take a few days for the account to be confirmed. I eventually received a phone call confirming my account and was able to get started after that.
 
