@@ -1,0 +1,18 @@
+{{- $author := index .Site.Data.authors (.Params.author | default .Site.Author.code) -}}
+<div>
+    {{- with $author.avatar }}
+    <figure class="author-avatar">
+        <img alt="{{ $author.name }} avatar" src="{{ $author.avatar | relURL }}" class="author-logo" height="90" width="90">
+    </figure>
+    {{- end }}
+    {{- with $author.name }}
+    <div class="author-name">
+        <span>About {{ . }}</span>
+    </div>
+    {{- end }}
+    {{- with $author.bio }}
+    <div class="author-description">
+        {{ . }}
+    </div>
+    {{- end }}
+</div>

@@ -4,7 +4,9 @@ description: "Deploying Nakama Server on a Free Oracle VM that is using an ARM C
 date: "2021-10-09 01:00:00+0200"
 slug: "nakama-arm"
 image: "cover.jpg"
-author: Ashley
+author: "Ashley"
+authors:
+    - Ashley
 categories:
     - Blog
     - Development

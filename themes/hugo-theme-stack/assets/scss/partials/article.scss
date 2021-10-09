@@ -77,6 +77,10 @@
     & + .article-subtitle {
         margin-top: 0;
     }
+
+    & + .article-author {
+        margin-top: 0;
+    }
 }
 
 .article-subtitle {
@@ -88,6 +92,19 @@
     font-size: 1.75rem;
     @include respond(xl) {
         font-size: 2rem;
+    }
+}
+
+
+.article-author {
+    font-weight: normal;
+    color: var(--card-text-color-primary);
+    margin: 5px 0;
+    line-height: 1.5;
+
+    font-size: 2.0rem;
+    @include respond(xl) {
+        font-size: 2.5rem;
     }
 }
 

@@ -66,6 +66,44 @@
                 }
             }
 
+            .author-avatar {
+                position: relative;
+                margin-top: 3rem;
+                margin-left: 0;
+                width: var(--sidebar-avatar-size);
+                height: var(--sidebar-avatar-size);
+
+                margin-bottom: var(--sidebar-element-separation);
+
+                .author-logo {
+                    width: 10%;
+                    height: 10%;
+                    border-radius: 100%;
+                    box-shadow: var(--shadow-l1);
+                }
+            }
+
+            .author-name {
+                color: var(--accent-color);
+                margin: 0;
+                font-size: 1.8rem;
+
+                @include respond(2xl) {
+                    font-size: 2rem;
+                }
+            }
+
+            .author-description {
+                color: var(--card-text-color-secondary);
+                font-weight: normal;
+                margin: 10px 0;
+                font-size: 1.6rem;
+
+                @include respond(2xl) {
+                    font-size: 1.8rem;
+                }
+            }
+
             .article-tags {
                 flex-wrap: wrap;
                 text-transform: unset;
