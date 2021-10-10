@@ -1,7 +1,7 @@
-{{ $author := index .Site.Data.authors (.Params.author | default "ashishlahoti") }}
+{{ $author := index .Site.Data.authors (.Params.author | default "Ashley") }}
 {{- if $author -}}
 <div class="meta_item">
     {{ partial "svg/author.svg" (dict "class" "meta_icon") -}}
-    <span class="meta_text">{{ $author.name }}</span>
+    <a class="meta_text" href="/authors/{{ lower $author.name}}">{{ $author.name }}</a>
 </div>
 {{- end -}}
